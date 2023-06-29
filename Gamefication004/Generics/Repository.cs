@@ -1,12 +1,17 @@
-using Gamification03.Interfaces;
+using System;
+using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
-namespace Gamefication004.Generics;
-
-public class Repository<T> : IRepository<T> where T : class
+public class Repository<T>
 {
-    private readonly string connectionString = "Persist Security Info=False;server=localhost;database=gamefication;uid=root;pwd=0406";
-    public IEnumerable<T?> ObterTodos(string tableName)
+    private string connectionString;
+
+    public Repository(string connectionString)
+    {
+        this.connectionString = connectionString;
+    }
+
+    public IEnumerable<T> ObterTodos(string tableName)
     {
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -19,14 +24,14 @@ public class Repository<T> : IRepository<T> where T : class
             {
                 while (reader.Read())
                 {
-                    T? entity = PopulateObject(reader);
+                    T entity = PopulateObject(reader);
                     yield return entity;
                 }
             }
         }
     }
 
-    public T? ObterPorId(string tableName, int id)
+    public T ObterPorId(string tableName, int id)
     {
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -40,7 +45,7 @@ public class Repository<T> : IRepository<T> where T : class
             {
                 if (reader.Read())
                 {
-                    T? entity = PopulateObject(reader);
+                    T entity = PopulateObject(reader);
                     return entity;
                 }
             }
@@ -89,9 +94,9 @@ public class Repository<T> : IRepository<T> where T : class
         }
     }
 
-    private T? PopulateObject(MySqlDataReader reader)
+    private T PopulateObject(MySqlDataReader reader)
     {
-        T? entity = Activator.CreateInstance<T>();
+        T entity = Activator.CreateInstance<T>();
 
         foreach (var property in typeof(T).GetProperties())
         {
