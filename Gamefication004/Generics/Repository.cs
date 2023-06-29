@@ -1,17 +1,12 @@
-using System;
-using System.Collections.Generic;
+using Gamification03.Interfaces;
 using MySql.Data.MySqlClient;
 
-public class Repository<T>
+namespace Gamefication004.Generics;
+
+public class Repository<T> : IRepository<T> where T : class
 {
-    private string connectionString;
-
-    public Repository(string connectionString)
-    {
-        this.connectionString = connectionString;
-    }
-
-    public IEnumerable<T> GetAll(string tableName)
+    private readonly string connectionString = "Persist Security Info=False;server=localhost;database=gamefication;uid=root;pwd=0406";
+    public IEnumerable<T?> ObterTodos(string tableName)
     {
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -24,14 +19,14 @@ public class Repository<T>
             {
                 while (reader.Read())
                 {
-                    T entity = PopulateObject(reader);
+                    T? entity = PopulateObject(reader);
                     yield return entity;
                 }
             }
         }
     }
 
-    public T GetById(string tableName, int id)
+    public T? ObterPorId(string tableName, int id)
     {
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -45,7 +40,7 @@ public class Repository<T>
             {
                 if (reader.Read())
                 {
-                    T entity = PopulateObject(reader);
+                    T? entity = PopulateObject(reader);
                     return entity;
                 }
             }
@@ -54,7 +49,7 @@ public class Repository<T>
         return default(T);
     }
 
-    public void Insert(string tableName, T entity)
+    public void Inserir(string tableName, T entity)
     {
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -67,7 +62,7 @@ public class Repository<T>
         }
     }
 
-    public void Update(string tableName, T entity)
+    public void Atualizar(string tableName, T entity)
     {
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -80,7 +75,7 @@ public class Repository<T>
         }
     }
 
-    public void Delete(string tableName, int id)
+    public void Excluir(string tableName, int id)
     {
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
@@ -94,9 +89,9 @@ public class Repository<T>
         }
     }
 
-    private T PopulateObject(MySqlDataReader reader)
+    private T? PopulateObject(MySqlDataReader reader)
     {
-        T entity = Activator.CreateInstance<T>();
+        T? entity = Activator.CreateInstance<T>();
 
         foreach (var property in typeof(T).GetProperties())
         {

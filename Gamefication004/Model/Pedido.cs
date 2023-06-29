@@ -50,6 +50,6 @@ public class Pedido
 
     public override string ToString()
     {
-        return "ID do Pedido: " + Id + "\nData: " + Data + "\nCliente: " + Cliente + "\nStatus: " + Status;
+        return "[" + Id + "]\nData: " + Data + "\nCliente: " + Cliente + "\nStatus: " + Status;
     }
 }

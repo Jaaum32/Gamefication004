@@ -1,7 +1,5 @@
 using Gamification03.Services;
 
-namespace Gamification03;
-
 public static class Program
 {
     public static void Main()
