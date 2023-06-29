@@ -1,23 +1,17 @@
-using System;
-using System.Collections.Generic;
 using MySql.Data.MySqlClient;
 
 public class Repository<T>
 {
-    private string connectionString;
-
-    public Repository(string connectionString)
-    {
-        this.connectionString = connectionString;
-    }
+    public MySqlConnection MySqlConnection =
+        new MySqlConnection("Server=localhost;Port=3306;database=gamefication;uid=root;pwd=260405");
 
     public IEnumerable<T> ObterTodos(string tableName)
     {
-        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        using (MySqlConnection)
         {
-            connection.Open();
-            
-            MySqlCommand command = connection.CreateCommand();
+            MySqlConnection.Open();
+
+            MySqlCommand command = MySqlConnection.CreateCommand();
             command.CommandText = $"SELECT * FROM {tableName}";
 
             using (MySqlDataReader reader = command.ExecuteReader())
@@ -33,21 +27,19 @@ public class Repository<T>
 
     public T ObterPorId(string tableName, int id)
     {
-        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        using (MySqlConnection)
         {
-            connection.Open();
-            
-            MySqlCommand command = connection.CreateCommand();
+            MySqlConnection.Open();
+
+            MySqlCommand command = MySqlConnection.CreateCommand();
             command.CommandText = $"SELECT * FROM {tableName} WHERE Id = @Id";
             command.Parameters.AddWithValue("@Id", id);
 
-            using (MySqlDataReader reader = command.ExecuteReader())
+            MySqlDataReader reader = command.ExecuteReader();
+            if (reader.Read())
             {
-                if (reader.Read())
-                {
-                    T entity = PopulateObject(reader);
-                    return entity;
-                }
+                T entity = PopulateObject(reader);
+                return entity;
             }
         }
 
@@ -56,12 +48,32 @@ public class Repository<T>
 
     public void Inserir(string tableName, T entity)
     {
-        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        using (MySqlConnection)
         {
-            connection.Open();
-            
-            MySqlCommand command = connection.CreateCommand();
-            command.CommandText = BuildInsertQuery(tableName, entity);
+            MySqlConnection.Open();
+
+            var propertyNames = new List<string>();
+            var propertyValues = new List<string>();
+            var parameters = new List<MySqlParameter>();
+
+            foreach (var property in typeof(T).GetProperties())
+            {
+                if (property.Name != "Id")
+                {
+                    var value = property.GetValue(entity);
+                    propertyNames.Add(property.Name);
+                    propertyValues.Add($"@{property.Name}");
+                    parameters.Add(new MySqlParameter($"@{property.Name}", value ?? DBNull.Value));
+                }
+            }
+
+            var query = $"INSERT INTO {tableName} ({string.Join(", ", propertyNames)}) " +
+                        $"VALUES ({string.Join(", ", propertyValues)})";
+
+
+            MySqlCommand command = MySqlConnection.CreateCommand();
+            command.CommandText = query;
+            command.Parameters.AddRange(parameters.ToArray());
 
             command.ExecuteNonQuery();
         }
@@ -69,11 +81,11 @@ public class Repository<T>
 
     public void Atualizar(string tableName, T entity)
     {
-        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        using (MySqlConnection)
         {
-            connection.Open();
-            
-            MySqlCommand command = connection.CreateCommand();
+            MySqlConnection.Open();
+
+            MySqlCommand command = MySqlConnection.CreateCommand();
             command.CommandText = BuildUpdateQuery(tableName, entity);
 
             command.ExecuteNonQuery();
@@ -82,11 +94,11 @@ public class Repository<T>
 
     public void Excluir(string tableName, int id)
     {
-        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        using (MySqlConnection)
         {
-            connection.Open();
-            
-            MySqlCommand command = connection.CreateCommand();
+            MySqlConnection.Open();
+
+            MySqlCommand command = MySqlConnection.CreateCommand();
             command.CommandText = $"DELETE FROM {tableName} WHERE Id = @Id";
             command.Parameters.AddWithValue("@Id", id);
 
@@ -110,30 +122,10 @@ public class Repository<T>
         return entity;
     }
 
-    private string BuildInsertQuery(string tableName, T entity)
-    {
-        var propertyNames = new List<string>();
-        var propertyValues = new List<string>();
-
-        foreach (var property in typeof(T).GetProperties())
-        {
-            if (property.Name != "Id")
-            {
-                var value = property.GetValue(entity);
-                propertyNames.Add(property.Name);
-                propertyValues.Add($"@{property.Name}");
-            }
-        }
-
-        var query = $"INSERT INTO {tableName} ({string.Join(", ", propertyNames)}) " +
-                    $"VALUES ({string.Join(", ", propertyValues)})";
-
-        return query;
-    }
-
     private string BuildUpdateQuery(string tableName, T entity)
     {
         var propertyAssignments = new List<string>();
+        var parameters = new List<MySqlParameter>();
 
         foreach (var property in typeof(T).GetProperties())
         {
@@ -141,11 +133,23 @@ public class Repository<T>
             {
                 var value = property.GetValue(entity);
                 propertyAssignments.Add($"{property.Name} = @{property.Name}");
+                parameters.Add(new MySqlParameter($"@{property.Name}", value ?? DBNull.Value));
             }
         }
 
         var query = $"UPDATE {tableName} SET {string.Join(", ", propertyAssignments)} " +
                     $"WHERE Id = @Id";
+
+        using (MySqlConnection)
+        {
+            MySqlConnection.Open();
+
+            MySqlCommand command = MySqlConnection.CreateCommand();
+            command.CommandText = query;
+            command.Parameters.AddRange(parameters.ToArray());
+
+            command.ExecuteNonQuery();
+        }
 
         return query;
     }

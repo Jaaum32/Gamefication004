@@ -1,4 +1,6 @@
+using Gamification03.Model;
 using Gamification03.Services;
+using projeto_final_POO2.reflection;
 
 public static class Program
 {
@@ -33,23 +35,25 @@ public static class Program
                         {
                             case 1:
                                 gerenciamento.ListarPedidos("Cliente");
-                                Console.Clear();
+                                //Console.Clear();
                                 break;
                             case 2:
                                 gerenciamento.ListarPedidos("Data");
-                                Console.Clear();
+                                //Console.Clear();
                                 break;
                             case 3:
                                 gerenciamento.ListarPedidos("Status");
-                                Console.Clear();
+                                //Console.Clear();
                                 break;
                         }
                         break;
                     case 6:
                         gerenciamento.CalcularValorPedido();
-                        Console.Clear();
+                        //Console.Clear();
                         break;
                     default:
+                        CreateTxt createTxt = new CreateTxt();
+                        createTxt.createTxt();
                         sair = 1;
                         break;
                 }

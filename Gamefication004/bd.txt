@@ -6,7 +6,7 @@ CREATE TABLE Pedido (
     id int AUTO_INCREMENT, 
     data DATE,
     cliente varchar(255),
-    status_pedido varchar(255),
+    status varchar(255),
     PRIMARY KEY(id)
 );
     
@@ -14,8 +14,8 @@ CREATE TABLE ItemPedido (
 	id int AUTO_INCREMENT,
     produto varchar(255),
     quantidade int, 
-    preco_unit decimal, // O professor disse que n era pra abreviar nada
-    pedido_id int, 
+    preco decimal(10,2),
+    pedidoId int, 
     PRIMARY KEY(id),
-	FOREIGN KEY (pedido_id) REFERENCES Pedido(id)
+	FOREIGN KEY (pedidoId) REFERENCES Pedido(id) ON DELETE CASCADE
 );

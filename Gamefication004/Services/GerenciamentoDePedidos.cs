@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Linq.Expressions;
 using Gamification03.Controller;
 using Gamification03.Model;
 
@@ -15,7 +16,7 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
     {
         Console.WriteLine("PREENCHA OS DADOS DO PEDIDO:");
         Console.Write("Data do pedido (dd/mm/aaaa): ");
-        string? dataPedido = readData();
+        DateTime dataPedido = readData();
 
         Console.Write("Cliente: ");
         string? cliente = Console.ReadLine();
@@ -30,16 +31,24 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
 
     public void AdicionarItemPedidos()
     {
+        _pedidoRepositoryMySqlr.ImprimirTodos();
         Console.WriteLine("PREENCHA OS DADOS DO ITEM:");
         Console.Write("ID do pedido: ");
         int pedidoId;
         while (true)
         {
-            pedidoId = readInt();
-            if (_pedidoRepositoryMySqlr.ObterPorId("pedido", pedidoId) == null)
-                Console.WriteLine("Nenhum pedido com esse ID!");
-            else
-                break;
+            try
+            {
+                pedidoId = readInt();
+                if (_pedidoRepositoryMySqlr.ObterPorId("pedido", pedidoId) == null)
+                    Console.WriteLine("Nenhum pedido com esse ID!");
+                else
+                    break;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ocorreu um erro: " + ex.Message);
+            }
         }
 
         Console.Write("Nome do produto: ");
@@ -49,7 +58,7 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
         int quantidade = readInt();
 
         Console.Write("Preço unitário: ");
-        double precoUnitario = readDouble();
+        decimal precoUnitario = readDouble();
 
         ItemPedido itemPedido = new ItemPedido(produto, quantidade, precoUnitario, pedidoId);
 
@@ -58,15 +67,23 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
 
     public void AtualizarStatus()
     {
+        _pedidoRepositoryMySqlr.ImprimirTodos();
         Console.Write("ID do pedido: ");
         int pedidoId;
         while (true)
         {
-            pedidoId = readInt();
-            if (_pedidoRepositoryMySqlr.ObterPorId("itempedido", pedidoId) == null)
-                Console.WriteLine("Nenhum pedido com esse ID!");
-            else
-                break;
+            try
+            {
+                pedidoId = readInt();
+                if (_pedidoRepositoryMySqlr.ObterPorId("pedido", pedidoId) == null)
+                    Console.WriteLine("Nenhum pedido com esse ID!");
+                else
+                    break;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ocorreu um erro: " + ex.Message);
+            }
         }
 
         Console.Write("Status [Entregue|Enviado|Pendente]: ");
@@ -77,16 +94,23 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
 
     public void RemoverPedido()
     {
-        _pedidoRepositoryMySqlr.ObterTodos("pedido");
+        _pedidoRepositoryMySqlr.ImprimirTodos();
         Console.WriteLine("Digite o ID do pedido para excluir:");
         int pedidoId;
         while (true)
         {
-            pedidoId = readInt();
-            if (_pedidoRepositoryMySqlr.ObterPorId("pedido", pedidoId) == null)
-                Console.WriteLine("Nenhum pedido com esse ID! Digite outro");
-            else
-                break;
+            try
+            {
+                pedidoId = readInt();
+                if (_pedidoRepositoryMySqlr.ObterPorId("pedido", pedidoId) == null)
+                    Console.WriteLine("Nenhum pedido com esse ID! Digite outro");
+                else
+                    break;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ocorreu um erro: " + ex.Message);
+            }
         }
 
         _pedidoRepositoryMySqlr.Excluir("pedido", pedidoId);
@@ -107,7 +131,7 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
 
         else if (filtro == "Status")
         {
-            Console.Write("Status [Entregue|Enviado]: ");
+            Console.Write("Status [Entregue|Enviado|Pendente]: ");
             string? status = readStatus();
 
             if (status != null)
@@ -117,20 +141,24 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
         else if (filtro == "Data")
         {
             Console.Write("Data do pedido (dd/mm/aaaa): ");
-            string? dataPedido = readData();
+            DateTime? dataPedido = readData();
 
             if (dataPedido != null)
                 pedidos = _pedidoRepositoryMySqlr.ObterPorData(dataPedido);
         }
 
-        if (pedidos == null)
+        if (pedidos.Count() == 0)
             Console.WriteLine("Nenhum pedido com esses dados!");
         else
         {
+            
+            Console.WriteLine("\n Pedidos: \n");
             foreach (var pedido in pedidos)
             {
+                
                 Console.WriteLine(pedido.ToString());
                 IEnumerable<ItemPedido> itens = _itemPedidoRepositoryMySqlpr.ListarTodosPorId(pedido.Id);
+                Console.WriteLine("\nItens: \n");
                 foreach (var item in itens)
                 {
                     Console.WriteLine(item.ToString());
@@ -141,7 +169,7 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
 
     public void CalcularValorPedido()
     {
-        double sum = 0;
+        decimal sum = 0;
 
         Console.Write("ID do pedido: ");
         int pedidoId = readInt();
@@ -150,7 +178,7 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
 
         foreach (var item in itens)
         {
-            sum += item.Quantidade * item.PrecoUnit;
+            sum += item.Quantidade * item.Preco;
         }
 
         Console.WriteLine("Valor Total Pedido: " + sum);
@@ -167,10 +195,10 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
         return x;
     }
 
-    public double readDouble()
+    public decimal readDouble()
     {
-        double x;
-        while (!double.TryParse(Console.ReadLine(), out x))
+        decimal x;
+        while (!decimal.TryParse(Console.ReadLine(), out x))
         {
             Console.WriteLine("Digite um valor válido!");
         }
@@ -181,17 +209,19 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
     public string? readStatus()
     {
         string? x = "";
-        while (x != "Entregue" || x != "Enviado" || x != "Pendente")
+        while (x != "Entregue" && x != "Enviado" && x != "Pendente")
         {
             x = Console.ReadLine();
-            if (x != "Entregue" || x != "Enviado" || x != "Pendente")
+            if (x != "Entregue" && x != "Enviado" && x != "Pendente")
+            {
                 Console.WriteLine("Status inválido!");
+            }
         }
 
         return x;
     }
 
-    public string readData()
+    public DateTime readData()
     {
         DateTime dataValida;
         while (!DateTime.TryParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture,
@@ -201,6 +231,6 @@ public class GerenciamentoDePedidos : IGerenciamentoDePedidoRepository
             Console.WriteLine("Digite uma data válida!");
         }
 
-        return dataValida.ToString("yyyy-MM-dd");
+        return dataValida;
     }
 }

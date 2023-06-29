@@ -1706,19 +1706,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\viclo\\.nuget\\packages\\": {}
+    "C:\\Users\\erick\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\viclo\\RiderProjects\\Gamefication004\\Gamefication004\\Gamefication004.csproj",
+      "projectUniqueName": "C:\\Users\\erick\\Desktop\\UTFPR\\POO\\Gamefication004\\Gamefication004\\Gamefication004.csproj",
       "projectName": "Gamefication004",
-      "projectPath": "C:\\Users\\viclo\\RiderProjects\\Gamefication004\\Gamefication004\\Gamefication004.csproj",
-      "packagesPath": "C:\\Users\\viclo\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\viclo\\RiderProjects\\Gamefication004\\Gamefication004\\obj\\",
+      "projectPath": "C:\\Users\\erick\\Desktop\\UTFPR\\POO\\Gamefication004\\Gamefication004\\Gamefication004.csproj",
+      "packagesPath": "C:\\Users\\erick\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\erick\\Desktop\\UTFPR\\POO\\Gamefication004\\Gamefication004\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\viclo\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\erick\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net7.0"
@@ -1763,7 +1763,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Users\\viclo\\.dotnet\\sdk\\7.0.200\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.304\\RuntimeIdentifierGraph.json"
       }
     }
   }

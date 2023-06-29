@@ -2,17 +2,17 @@ namespace Gamification03.Model;
 
 public class Pedido
 {
+    public Pedido()
+    {
+    }
+
     public int Id { get; set; }
-    public string? Data { get; set; }
+    public DateTime? Data { get; set; }
     public string? Cliente { get; set; }
     public string? Status { get; set; }
 
-    public Pedido(int id, string? data, string? cliente, string? status)
+    public Pedido(int id, DateTime? data, string? cliente, string? status)
     {
-        if (string.IsNullOrWhiteSpace(data))
-        {
-            throw new ArgumentException("Data não pode ser vazio ou nulo.");
-        }
         if (string.IsNullOrWhiteSpace(cliente))
         {
             throw new ArgumentException("Nome do cliente não pode ser vazio ou nulo.");
@@ -28,12 +28,8 @@ public class Pedido
         Status = status;
     }
 
-    public Pedido(string? data, string? cliente, string? status)
+    public Pedido(DateTime? data, string? cliente, string? status)
     {
-        if (string.IsNullOrWhiteSpace(data))
-        {
-            throw new ArgumentException("Data não pode ser vazio ou nulo.");
-        }
         if (string.IsNullOrWhiteSpace(cliente))
         {
             throw new ArgumentException("Nome do cliente não pode ser vazio ou nulo.");
