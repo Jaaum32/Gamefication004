@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
+using MySql.Data.MySqlClient;
 
 public class Repository<T>
 {
@@ -14,14 +13,14 @@ public class Repository<T>
 
     public IEnumerable<T> GetAll(string tableName)
     {
-        using (SqlConnection connection = new SqlConnection(connectionString))
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
             connection.Open();
-
-            SqlCommand command = connection.CreateCommand();
+            
+            MySqlCommand command = connection.CreateCommand();
             command.CommandText = $"SELECT * FROM {tableName}";
 
-            using (SqlDataReader reader = command.ExecuteReader())
+            using (MySqlDataReader reader = command.ExecuteReader())
             {
                 while (reader.Read())
                 {
@@ -34,15 +33,15 @@ public class Repository<T>
 
     public T GetById(string tableName, int id)
     {
-        using (SqlConnection connection = new SqlConnection(connectionString))
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
             connection.Open();
-
-            SqlCommand command = connection.CreateCommand();
+            
+            MySqlCommand command = connection.CreateCommand();
             command.CommandText = $"SELECT * FROM {tableName} WHERE Id = @Id";
             command.Parameters.AddWithValue("@Id", id);
 
-            using (SqlDataReader reader = command.ExecuteReader())
+            using (MySqlDataReader reader = command.ExecuteReader())
             {
                 if (reader.Read())
                 {
@@ -57,11 +56,11 @@ public class Repository<T>
 
     public void Insert(string tableName, T entity)
     {
-        using (SqlConnection connection = new SqlConnection(connectionString))
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
             connection.Open();
-
-            SqlCommand command = connection.CreateCommand();
+            
+            MySqlCommand command = connection.CreateCommand();
             command.CommandText = BuildInsertQuery(tableName, entity);
 
             command.ExecuteNonQuery();
@@ -70,11 +69,11 @@ public class Repository<T>
 
     public void Update(string tableName, T entity)
     {
-        using (SqlConnection connection = new SqlConnection(connectionString))
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
             connection.Open();
-
-            SqlCommand command = connection.CreateCommand();
+            
+            MySqlCommand command = connection.CreateCommand();
             command.CommandText = BuildUpdateQuery(tableName, entity);
 
             command.ExecuteNonQuery();
@@ -83,15 +82,71 @@ public class Repository<T>
 
     public void Delete(string tableName, int id)
     {
-        using (SqlConnection connection = new SqlConnection(connectionString))
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
             connection.Open();
-
-            SqlCommand command = connection.CreateCommand();
+            
+            MySqlCommand command = connection.CreateCommand();
             command.CommandText = $"DELETE FROM {tableName} WHERE Id = @Id";
             command.Parameters.AddWithValue("@Id", id);
 
             command.ExecuteNonQuery();
         }
+    }
+
+    private T PopulateObject(MySqlDataReader reader)
+    {
+        T entity = Activator.CreateInstance<T>();
+
+        foreach (var property in typeof(T).GetProperties())
+        {
+            if (!reader.IsDBNull(reader.GetOrdinal(property.Name)))
+            {
+                var value = reader[property.Name];
+                property.SetValue(entity, value);
+            }
+        }
+
+        return entity;
+    }
+
+    private string BuildInsertQuery(string tableName, T entity)
+    {
+        var propertyNames = new List<string>();
+        var propertyValues = new List<string>();
+
+        foreach (var property in typeof(T).GetProperties())
+        {
+            if (property.Name != "Id")
+            {
+                var value = property.GetValue(entity);
+                propertyNames.Add(property.Name);
+                propertyValues.Add($"@{property.Name}");
+            }
+        }
+
+        var query = $"INSERT INTO {tableName} ({string.Join(", ", propertyNames)}) " +
+                    $"VALUES ({string.Join(", ", propertyValues)})";
+
+        return query;
+    }
+
+    private string BuildUpdateQuery(string tableName, T entity)
+    {
+        var propertyAssignments = new List<string>();
+
+        foreach (var property in typeof(T).GetProperties())
+        {
+            if (property.Name != "Id")
+            {
+                var value = property.GetValue(entity);
+                propertyAssignments.Add($"{property.Name} = @{property.Name}");
+            }
+        }
+
+        var query = $"UPDATE {tableName} SET {string.Join(", ", propertyAssignments)} " +
+                    $"WHERE Id = @Id";
+
+        return query;
     }
 }
