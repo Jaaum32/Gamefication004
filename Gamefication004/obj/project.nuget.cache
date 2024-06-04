@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "DGsMl+OP4V/Xj83CsXjyz0Ft9Xw4isnp0EL5B0dv+FuLorSa+oe3G36FUiqRM9KRPdRxkuLW50oZcMHYG/+IPw==",
+  "dgSpecHash": "PqKsiwV0RrHKH5CSUOC0N/mirxCgh6ZHdI/w4puFNqSCIDBLasSV+Gv5I9EYX+X0NmLdzGbJk6QAGunWAEbl4A==",
   "success": true,
-  "projectFilePath": "C:\\Users\\erick\\Desktop\\UTFPR\\POO\\Gamefication004\\Gamefication004\\Gamefication004.csproj",
+  "projectFilePath": "C:\\Users\\erick\\Desktop\\UTFPR\\já foi lek\\POO\\Gamefication004\\Gamefication004\\Gamefication004.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\erick\\.nuget\\packages\\google.protobuf\\3.21.9\\google.protobuf.3.21.9.nupkg.sha512",
     "C:\\Users\\erick\\.nuget\\packages\\k4os.compression.lz4\\1.3.5\\k4os.compression.lz4.1.3.5.nupkg.sha512",
@@ -33,7 +33,11 @@
     "C:\\Users\\erick\\.nuget\\packages\\system.text.json\\7.0.1\\system.text.json.7.0.1.nupkg.sha512",
     "C:\\Users\\erick\\.nuget\\packages\\system.threading.tasks\\4.3.0\\system.threading.tasks.4.3.0.nupkg.sha512",
     "C:\\Users\\erick\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
-    "C:\\Users\\erick\\.nuget\\packages\\system.windows.extensions\\4.7.0\\system.windows.extensions.4.7.0.nupkg.sha512"
+    "C:\\Users\\erick\\.nuget\\packages\\system.windows.extensions\\4.7.0\\system.windows.extensions.4.7.0.nupkg.sha512",
+    "C:\\Users\\erick\\.nuget\\packages\\microsoft.netcore.app.ref\\7.0.16\\microsoft.netcore.app.ref.7.0.16.nupkg.sha512",
+    "C:\\Users\\erick\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\7.0.16\\microsoft.windowsdesktop.app.ref.7.0.16.nupkg.sha512",
+    "C:\\Users\\erick\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\7.0.16\\microsoft.aspnetcore.app.ref.7.0.16.nupkg.sha512",
+    "C:\\Users\\erick\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\7.0.16\\microsoft.netcore.app.host.win-x64.7.0.16.nupkg.sha512"
   ],
   "logs": []
 }
